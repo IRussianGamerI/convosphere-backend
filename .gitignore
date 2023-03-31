@@ -1,2 +1,4 @@
 .idea
 venv
+convosphere_backend/__pycache__
+convosphere_backend/migrations

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-xq%5zvkf)ota5ny$o!j$ptes@8@qgt$oc827%*-2_(mu1=@udq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition
@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_yasg',
+    'corsheaders',
+    'convosphere_backend'
 ]
 
 MIDDLEWARE = [
@@ -47,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'convosphere_backend.urls'
@@ -68,6 +73,8 @@ TEMPLATES = [
     },
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 WSGI_APPLICATION = 'convosphere_backend.wsgi.application'
 
 
@@ -76,8 +83,13 @@ WSGI_APPLICATION = 'convosphere_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'convosphere',
+        'USER': 'cs_admin',
+        'PASSWORD': 'cs_admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'OPTIONS': {'client_encoding': 'UTF8'}
     }
 }
 
