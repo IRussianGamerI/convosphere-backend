@@ -1,13 +1,13 @@
+import re
 from datetime import datetime
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.request import Request
 from rest_framework.response import Response
 
 from convosphere_backend.models import Topic, Message, User
-from convosphere_backend.serializers import UserSerializer, TopicSerializer, MessageSerializer
+from convosphere_backend.serializers import UserSerializer, TopicSerializer, MessageSerializer, UserSignupSerializer
 
 
 class IsStaffOrReadOnly(BasePermission):
@@ -19,8 +19,21 @@ class IsStaffOrReadOnly(BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
+# View for the signup endpoint
+@api_view(['POST'])
+def signup(request):
+    serializer = UserSignupSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        user.set_password(user.password)
+        user.save()
+        return Response({"status": "success", "message": "User created successfully"})
+    else:
+        return Response({"status": "error", "message": serializer.errors})
+
+
 @permission_classes([IsStaffOrReadOnly])
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

@@ -10,6 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserSignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "email", "password"]
+
+
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic

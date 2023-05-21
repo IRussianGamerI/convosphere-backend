@@ -21,8 +21,11 @@ from rest_framework import routers
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-from convosphere_backend import views
-from convosphere_backend.views import IsStaffOrReadOnly, TopicViewSet, MessageViewSet, UserViewSet
+from convosphere_backend.views import IsStaffOrReadOnly, TopicViewSet, MessageViewSet, UserViewSet, signup
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -42,11 +45,13 @@ router.register(r'topics', TopicViewSet)
 router.register(r'messages', MessageViewSet)
 router.register(r'users', UserViewSet, basename='users')
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('swagger.yaml', schema_view.without_ui(cache_timeout=0), name='schema-yaml'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/signup/', signup, name='sign_up'),  # url for sign up
     path('api/', include(router.urls)),
 ]
