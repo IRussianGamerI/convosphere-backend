@@ -7,7 +7,7 @@ from convosphere_backend.models import User, Message, Topic
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = ["id", "username", "email", "is_staff", "is_superuser", "is_active", "date_joined", "last_login"]
 
 
 class UserSignupSerializer(serializers.ModelSerializer):

@@ -22,7 +22,9 @@ Backend repository for course work on Networking
 }
 ```
 
-## Install & run
+### Python 3.11 is recommended.
+
+## Install
 
 1. Create virtual environment
     ```bash
@@ -57,7 +59,8 @@ Backend repository for course work on Networking
    python3 manage.py makemigrations
    python3 manage.py migrate
    ```
-5. Run server
+
+## Run
    ```bash
    python3 manage.py runserver
    ```

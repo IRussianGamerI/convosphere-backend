@@ -1,10 +1,10 @@
-import re
 from datetime import datetime
 
 from rest_framework import viewsets, mixins
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from convosphere_backend.models import Topic, Message, User
 from convosphere_backend.serializers import UserSerializer, TopicSerializer, MessageSerializer, UserSignupSerializer
@@ -14,26 +14,10 @@ class IsStaffOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
-
-        print(request.user)
         return bool(request.user and request.user.is_staff)
 
 
-# View for the signup endpoint
-@api_view(['POST'])
-def signup(request):
-    serializer = UserSignupSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        user.set_password(user.password)
-        user.save()
-        return Response({"status": "success", "message": "User created successfully"})
-    else:
-        return Response({"status": "error", "message": serializer.errors})
-
-
-@permission_classes([IsStaffOrReadOnly])
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -45,11 +29,26 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Lis
                 queryset = queryset.filter(username__contains=params['q'])
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            user.set_password(user.password)
+            user.save()
+            return Response(UserSignupSerializer(user).data)
+        else:
+            return Response(serializer.errors)
+
 
 @permission_classes([IsStaffOrReadOnly])
+@authentication_classes([JWTAuthentication])
 class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+
+    # allow unauthenticated users to view topics to bypass the jwt auth
+    def perform_authentication(self, request):
+        pass
 
     def get_queryset(self):
         queryset = Topic.objects.all().order_by('name')
@@ -61,9 +60,14 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 
 @permission_classes([IsAuthenticatedOrReadOnly])
+@authentication_classes([JWTAuthentication])
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+
+    # allow unauthenticated users to view messages to bypass the jwt auth
+    def perform_authentication(self, request):
+        pass
 
     def get_queryset(self):
         queryset = Message.objects.all().order_by('-sent_time')
@@ -85,13 +89,18 @@ class MessageViewSet(viewsets.ModelViewSet):
                 queryset = queryset[:int(params['slice_to'])]
         return queryset
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request):
         data = request.data
-        data['user'] = request.user.user_id
-        data['topic'] = Topic.objects.get(topic_id=data['topic']).topic_id
-        data['sent_time'] = datetime.now()
-        data['parent'] = request.data['parent'] if 'parent' in request.data and Message.objects.filter(
-            message_id=request.data['parent']).exists() else None
+        data['sender'] = request.user.user_id
+        # Check if the topic exists
+        if not Topic.objects.filter(topic_id=data['topic']).exists():
+            # Return an error if it doesn't, status code 400
+            return Response({'status': 'topic does not exist'}, status=400)
+        # Check if parent message's status is not deleted
+        if 'parent' in data and Message.objects.filter(message_id=data['parent']).exists() and \
+                Message.objects.get(message_id=data['parent']).is_deleted:
+            # Return an error if it is, status code 400
+            return Response({'status': 'parent message is deleted'}, status=400)
 
         serializer = MessageSerializer(data=data)
         if serializer.is_valid():
