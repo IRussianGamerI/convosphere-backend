@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
+    'django_grpc_framework',
     'corsheaders',
     'convosphere_backend'
 ]

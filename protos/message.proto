@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+service MsgController {
+  rpc Create(Msg) returns (Msg) {}  // Send new message
+  rpc List(MsgListRequest) returns (stream Msg) {}  // List all messages
+  rpc Retrieve(MsgRetrieveRequest) returns (Msg) {}  // Retrieve message by id
+  rpc Update(Msg) returns (Msg) {}  // Update message by id
+  rpc Destroy(MsgRetrieveRequest) returns (google.protobuf.Empty) {}  // Delete message by id
+}
+
+message Msg {
+  int32 message_id = 1;
+  int32 parent = 2;
+  int32 sender = 3;
+  int32 topic = 4;
+  string text = 5;
+  bool is_deleted = 6;
+}
+
+message MsgRetrieveRequest {
+  int32 message_id = 1;
+}
+
+message MsgListRequest {}

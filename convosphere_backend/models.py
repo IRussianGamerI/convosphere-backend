@@ -15,6 +15,6 @@ class Message(models.Model):
     sender = models.ForeignKey(User, models.DO_NOTHING, blank=False, null=False)
     topic = models.ForeignKey(Topic, models.DO_NOTHING, blank=False, null=False)
     text = models.TextField(blank=False, null=False)
-    sent_time = models.DateTimeField(blank=False, null=False, default=timezone.now)
+    sent_time = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     edit_time = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField(blank=False, null=False, default=False)
