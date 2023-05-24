@@ -27,6 +27,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from convosphere_backend.handlers import grpc_handlers as convosphere_grpc_handlers
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Convosphere API",
@@ -54,3 +56,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include(router.urls)),
 ]
+
+
+def grpc_handlers(server):
+    convosphere_grpc_handlers(server)
