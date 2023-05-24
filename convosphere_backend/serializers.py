@@ -1,16 +1,17 @@
 from rest_framework.fields import CharField
 from rest_framework import serializers
-from django_grpc_framework import proto_serializers
+from django_socio_grpc import proto_serializers
 
 from convosphere_backend.models import User, Message, Topic
-from convosphere_proto import message_pb2
+from convosphere_backend.grpc import convosphere_backend_pb2
 
 
 class MessageProtoSerializer(proto_serializers.ModelProtoSerializer):
     class Meta:
         model = Message
-        proto_class = message_pb2.Msg
-        fields = "__all__"
+        proto_class = convosphere_backend_pb2.Message
+        proto_class_list = convosphere_backend_pb2.MessageList
+        fields = ['id', 'parent', 'topic', 'sender', 'text', 'sent_time', 'edit_time', 'is_deleted']
 
 
 class UserSerializer(serializers.ModelSerializer):

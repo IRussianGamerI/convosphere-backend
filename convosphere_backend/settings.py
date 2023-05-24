@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
-    'django_grpc_framework',
+    'django_socio_grpc',
     'corsheaders',
     'convosphere_backend'
 ]
@@ -104,6 +104,11 @@ REST_FRAMEWORK = {
         'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
         'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     }
+}
+
+GRPC_FRAMEWORK = {
+    "ROOT_HANDLERS_HOOK": "convosphere_backend.handlers.grpc_handlers",
+    "SEPARATE_READ_WRITE_MODEL": False
 }
 
 

@@ -1,13 +1,12 @@
 coreapi==2.3.3
 coreschema==0.0.4
-Django==4.0.1
+Django==4.2.1
 django-cors-headers==3.14.0
-django-rest-framework==0.1.0
 djangorestframework==3.14.0
 drf-yasg==1.21.5
 psycopg2==2.9.6
 requests==2.31.0
 djangorestframework_simplejwt==5.2.2
-djangogrpcframework==0.2.1
+django-socio-grpc==0.19.4
 grpcio==1.54.2
 grpcio-tools==1.54.2

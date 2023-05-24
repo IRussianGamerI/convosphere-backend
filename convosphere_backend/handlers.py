@@ -1,6 +1,8 @@
+from django_socio_grpc.services.app_handler_registry import AppHandlerRegistry
+
 from convosphere_backend.services import MessageService
-from convosphere_proto import message_pb2_grpc
 
 
 def grpc_handlers(server):
-    message_pb2_grpc.add_MsgControllerServicer_to_server(MessageService.as_servicer(), server)
+    app_registry = AppHandlerRegistry("convosphere_backend", server)
+    app_registry.register(MessageService)
