@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package convosphere_backend.convosphere_backend;
+
+service MessageController {
+    rpc Create(Message) returns (Message) {}
+    rpc List(MessageListRequest) returns (MessageList) {}
+    rpc PartialUpdate(MessagePartialUpdateRequest) returns (Message) {}
+    rpc Retrieve(MessageRetrieveRequest) returns (Message) {}
+    rpc Update(Message) returns (Message) {}
+}
+
+message Message {
+    int32 id = 1;
+    optional int64 parent = 2;
+    int64 topic = 3;
+    int32 sender = 4;
+    string text = 5;
+    string sent_time = 6;
+    optional string edit_time = 7;
+    bool is_deleted = 8;
+}
+
+message MessageList {
+    repeated Message results = 1;
+}
+
+message MessageListRequest {
+}
+
+message MessagePartialUpdateRequest {
+    int32 id = 1;
+    optional int64 parent = 2;
+    int64 topic = 3;
+    int32 sender = 4;
+    string text = 5;
+    bool is_deleted = 7;
+    repeated string _partial_update_fields = 8;
+    optional string edit_time = 9;
+    string sent_time = 10;
+}
+
+message MessageRetrieveRequest {
+    int32 id = 1;
+}
+

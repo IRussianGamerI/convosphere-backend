@@ -2,3 +2,4 @@
 venv
 convosphere_backend/__pycache__
 convosphere_backend/migrations
+convosphere_backend/grpc/__pycache__
