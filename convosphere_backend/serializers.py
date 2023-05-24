@@ -11,7 +11,7 @@ class MessageProtoSerializer(proto_serializers.ModelProtoSerializer):
         model = Message
         proto_class = convosphere_backend_pb2.Message
         proto_class_list = convosphere_backend_pb2.MessageList
-        fields = ['id', 'parent', 'topic', 'sender', 'text', 'sent_time', 'edit_time', 'is_deleted']
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):

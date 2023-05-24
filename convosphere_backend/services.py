@@ -11,5 +11,5 @@ from convosphere_backend.serializers import MessageProtoSerializer
 
 class MessageService(mixins.AsyncCreateModelMixin, mixins.AsyncListModelMixin, mixins.AsyncUpdateModelMixin,
                      mixins.AsyncRetrieveModelMixin, mixins.AsyncPartialUpdateModelMixin, generics.GenericService):
-    queryset = Message.objects.all()
+    queryset = Message.objects.filter(is_deleted=False).order_by('-sent_time')
     serializer_class = MessageProtoSerializer
