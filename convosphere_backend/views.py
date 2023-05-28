@@ -89,16 +89,17 @@ class MessageViewSet(viewsets.ModelViewSet):
                 queryset = queryset[:int(params['slice_to'])]
         return queryset
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         data = request.data
-        data['sender'] = request.user.user_id
+        if data['sender'] != request.user.id:
+            return Response({'status': 'Sending not allowed. You must speak for yourself'}, status=401)
         # Check if the topic exists
-        if not Topic.objects.filter(topic_id=data['topic']).exists():
+        if not Topic.objects.filter(id=data['topic']).exists():
             # Return an error if it doesn't, status code 400
             return Response({'status': 'topic does not exist'}, status=400)
         # Check if parent message's status is not deleted
-        if 'parent' in data and Message.objects.filter(message_id=data['parent']).exists() and \
-                Message.objects.get(message_id=data['parent']).is_deleted:
+        if 'parent' in data and Message.objects.filter(id=data['parent']).exists() and \
+                Message.objects.get(id=data['parent']).is_deleted:
             # Return an error if it is, status code 400
             return Response({'status': 'parent message is deleted'}, status=400)
 
@@ -116,7 +117,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         data['user'] = request.user.user_id
         data['parent'] = request.data['parent'] if 'parent' in request.data and Message.objects.filter(
-            message_id=request.data['parent']).exists() else None
+            id=request.data['parent']).exists() else None
 
         serializer = MessageSerializer(data=data)
         if serializer.is_valid():
