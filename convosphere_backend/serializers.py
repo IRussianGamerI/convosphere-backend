@@ -38,6 +38,12 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CreateMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['parent', 'topic', 'text']
+
+
 class LoginRequestSerializer(serializers.Serializer):
     model = User
     username = CharField(required=True)

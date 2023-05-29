@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from convosphere_backend.models import Topic, Message, User
-from convosphere_backend.serializers import UserSerializer, TopicSerializer, MessageSerializer, UserSignupSerializer
+from convosphere_backend.serializers import UserSerializer, TopicSerializer, MessageSerializer, UserSignupSerializer, \
+    CreateMessageSerializer
 
 
 class IsStaffOrReadOnly(BasePermission):
@@ -91,10 +92,10 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        if data['sender'] != request.user.id:
-            return Response({'status': 'Sending not allowed. You must speak for yourself'}, status=401)
+        if 'text' in data and len(data['text']) == 0:
+            return Response({'status': 'message must not be empty'}, status=400)
         # Check if the topic exists
-        if not Topic.objects.filter(id=data['topic']).exists():
+        if 'topic' in data and not Topic.objects.filter(id=data['topic']).exists():
             # Return an error if it doesn't, status code 400
             return Response({'status': 'topic does not exist'}, status=400)
         # Check if parent message's status is not deleted
@@ -103,7 +104,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             # Return an error if it is, status code 400
             return Response({'status': 'parent message is deleted'}, status=400)
 
-        serializer = MessageSerializer(data=data)
+        serializer = CreateMessageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
