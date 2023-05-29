@@ -104,7 +104,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             # Return an error if it is, status code 400
             return Response({'status': 'parent message is deleted'}, status=400)
 
-        data['sender'] = request.user.user_id
+        data['sender'] = request.user.id
 
         serializer = CreateMessageSerializer(data=data)
         if serializer.is_valid():

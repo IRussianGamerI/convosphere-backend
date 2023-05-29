@@ -41,7 +41,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class CreateMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['parent', 'topic', 'text']
+        fields = ['parent', 'topic', 'text', 'sender']
 
 
 class LoginRequestSerializer(serializers.Serializer):
