@@ -36,7 +36,7 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Lis
             user = serializer.save()
             user.set_password(user.password)
             user.save()
-            return Response(UserSignupSerializer(user).data)
+            return Response({"status": "User created"}, status=201)
         else:
             return Response(serializer.errors)
 
