@@ -22,7 +22,7 @@ with grpc.insecure_channel('localhost:50051') as channel:
 
     print("--------------PartialUpdate--------------")
     response = stub.PartialUpdate(
-        convosphere_backend_pb2.MessagePartialUpdateRequest(id=response.id, sender=3, text="Hello World again!",
+        convosphere_backend_pb2.MessagePartialUpdateRequest(id=response.id, sender=2, text="Hello World again!",
                                                             _partial_update_fields=["sender", "text"])
     )
     print(response)

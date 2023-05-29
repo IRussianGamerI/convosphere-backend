@@ -66,3 +66,19 @@ Backend repository for course work on Networking
    ```bash
    python3 manage.py runserver
    ```
+
+## Manually test gRPC server
+1. Create Django superuser
+   ```bash
+   python manage.py createsuperuser
+   ```
+   Then fill all the credentials
+2. Somehow create another user (e.g. `POST /api/users/ ...` or `INSERT INTO auth_user ...`)
+3. Run the script
+    ```bash
+    python manual_test.py
+    ```
+   While the gRPC server is running:
+   ```bash
+   python manage.py grpcrunserver
+   ```
