@@ -52,11 +52,13 @@ Backend repository for course work on Networking
    ALTER ROLE cs_admin SET timezone TO 'UTC';
    
    GRANT ALL PRIVILEGES ON DATABASE convosphere TO cs_admin;
+   ALTER DATABASE convosphere OWNER TO cs_admin;
+
    \q
    ```
 4. Apply migrations
    ```bash
-   python3 manage.py makemigrations
+   python3 manage.py makemigrations convosphere_backend
    python3 manage.py migrate
    ```
 
