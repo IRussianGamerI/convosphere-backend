@@ -22,6 +22,10 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Lis
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    # allow unauthenticated users to view users to bypass the jwt auth
+    def perform_authentication(self, request):
+        pass
+
     def get_queryset(self):
         queryset = User.objects.all().order_by('username')
         if self.request.method == "GET":
