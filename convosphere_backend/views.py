@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.forms import model_to_dict
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -81,9 +82,9 @@ class MessageViewSet(viewsets.ModelViewSet):
             if 'q' in params:
                 queryset = queryset.filter(text__contains=params['q'])
             if 'topic' in params:
-                queryset = queryset.filter(topic__topic_id=params['topic'])
+                queryset = queryset.filter(topic_id=params['topic'])
             if 'user' in params:
-                queryset = queryset.filter(user__user_id=params['user'])
+                queryset = queryset.filter(user__id=params['user'])
             if 'min_sent_time' in params:
                 queryset = queryset.filter(sent_time__gte=params['min_sent_time'])
             if 'max_sent_time' in params:
@@ -134,9 +135,13 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if request.user != instance.sender or not request.user.is_staff:
+        if request.user.id != instance.sender and not request.user.is_staff:
             return Response({'status': 'not allowed'})
         if instance.is_deleted:
             return Response({'status': 'already deleted'})
         instance.is_deleted = True
-        return Response({'status': 'ok'})
+        serializer = MessageSerializer(data=model_to_dict(instance))
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
